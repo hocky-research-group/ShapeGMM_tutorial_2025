@@ -1,0 +1,37 @@
+# units
+UNITS LENGTH=A TIME=ps ENERGY=kcal/mol
+
+# make a group of atoms
+GROUP ATOMS=5,7,9,15,17 LABEL=ga_list
+
+# lda cv 
+ld1: LDA_PROJ REFERENCE=global_avg.txt PRECISION=global_prec.txt VECTOR=ld1_coeffs.txt GROUP=ga_list 
+
+# phi and psi CVs
+phi: TORSION ATOMS=5,7,9,15
+psi: TORSION ATOMS=7,9,15,17
+
+#WT-MetaD CALCULATION
+METAD ...
+LABEL=meta
+ARG=phi,psi
+PACE=500
+HEIGHT=0.5
+SIGMA=0.4,0.4
+BIASFACTOR=8
+TEMP=300.0
+GRID_MIN=-pi,-pi
+GRID_MAX=pi,pi
+GRID_BIN=70,70
+CALC_RCT
+FILE=__PREFIX__.hills.dat
+GRID_WFILE=__PREFIX__.grid.dat
+GRID_WSTRIDE=25000000
+STORE_GRIDS
+STRIDE=2
+... METAD
+
+# print
+PRINT ARG=ld1,phi,psi,meta.* STRIDE=2500 FILE=__PREFIX__.cv.dat FMT=%8.8f
+
+ENDPLUMED

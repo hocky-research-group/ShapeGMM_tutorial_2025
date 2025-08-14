@@ -1,0 +1,17 @@
+# units
+UNITS LENGTH=A TIME=ps ENERGY=kcal/mol
+
+# make a group of atoms
+GROUP ATOMS=5,7,9,15,17 LABEL=ga_list
+
+# lda cv 
+ld1: LDA_PROJ REFERENCE=global_avg.txt PRECISION=global_prec.txt VECTOR=ld1_coeffs.txt GROUP=ga_list 
+
+# phi and psi CVs
+phi: TORSION ATOMS=5,7,9,15
+psi: TORSION ATOMS=7,9,15,17
+
+# print
+PRINT ARG=ld1,phi,psi STRIDE=2500 FILE=__PREFIX__.cv.dat FMT=%8.8f
+
+ENDPLUMED
