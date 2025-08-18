@@ -1,0 +1,12 @@
+#!/bin/bash
+gmx="singularity exec /scratch/projects/hockygroup/gmh4/projects/gmm_clustering/docker_test/gmx2019.6-plumed-sizeshape_amd64_cuda.sif gmx"
+ln -sf ../inputs/run.mdp
+ln -sf ../inputs/topol.top
+ln -sf ../inputs/alaA.pdb
+ln -sf ../inputs/alaB.pdb
+$gmx grompp -f run.mdp -c alaA.pdb -o alaA.tpr
+$gmx grompp -f run.mdp -c alaB.pdb -o alaB.tpr
+$gmx mdrun -s alaA.tpr -deffnm alaA_20ns
+$gmx mdrun -s alaB.tpr -deffnm alaB_20ns
+
+mv \#* tmp/

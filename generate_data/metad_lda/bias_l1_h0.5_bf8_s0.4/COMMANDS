@@ -1,0 +1,22 @@
+#!/bin/bash
+gmx="singularity exec /scratch/projects/hockygroup/gmh4/projects/gmm_clustering/docker_test/gmx2019.6-plumed-sizeshape_amd64_cuda.sif gmx"
+input_dir=../../inputs
+data_dir=../../../analyze_data/outputs/clustering
+ln -sf ${input_dir}/run_100ns.mdp
+ln -sf ${input_dir}/topol.top
+ln -sf ${input_dir}/alaA.pdb
+
+ln -sf ${data_dir}/global_avg.txt   
+ln -sf ${data_dir}/ld1_coeffs.txt
+ln -sf ${data_dir}/global_prec.txt
+
+height=0.5
+
+prefix=alaA_100ns_bias_ld1_h${height}_sigma0.4_BF8
+plumedfile=bias_lda_varyheight.plumed.dat
+sed -e "s/__PREFIX__/$prefix/" -e "s/__HEIGHT__/$height/" ${input_dir}/$plumedfile > $plumedfile
+
+$gmx grompp -f run_100ns.mdp -c alaA.pdb -o alaA_100ns.tpr
+$gmx mdrun -nt 1 -s alaA_100ns.tpr -plumed $plumedfile -deffnm $prefix
+
+mv \#* tmp/
